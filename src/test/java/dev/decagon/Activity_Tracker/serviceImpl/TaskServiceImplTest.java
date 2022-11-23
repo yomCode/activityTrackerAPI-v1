@@ -48,7 +48,7 @@ class TaskServiceImplTest {
         taskRequestDto.setDescription("Have a talk with him");
         taskService.createTask(taskRequestDto, session);
 
-        Task task = taskRepository.findById(9L).get();
+        Task task = taskRepository.findById(14L).get();
 
         assertEquals("Yom", task.getTitle());
     }
@@ -68,39 +68,34 @@ class TaskServiceImplTest {
 
     @Test
     void viewTaskById() {
-      ResponseEntity<TaskResponseDto> response = taskService.viewTaskById(1L);
+      ResponseEntity<TaskResponseDto> response = taskService.viewTaskById(2L);
 
       assertEquals(true, response != null);
-
     }
 
     @Test
     void edit_taskTitle() {
         TaskRequestDto request = new TaskRequestDto();
         request.setTitle("My new title");
-        taskService.edit_taskTitle(request, 1L);
+        taskService.edit_taskTitle(request, 2L);
 
-        Task task = taskRepository.findById(1L).get();
+        Task task = taskRepository.findById(2L).get();
 
         assertEquals("My new title", task.getTitle());
-
     }
 
     @Test
     void edit_taskDescription() {
         TaskRequestDto request = new TaskRequestDto();
         request.setDescription("My new description");
-        taskService.edit_taskDescription(request, 1L);
+        taskService.edit_taskDescription(request, 2L);
 
-        Task task = taskRepository.findById(1L).get();
+        Task task = taskRepository.findById(2L).get();
 
         assertEquals("My new description", task.getDescription());
-
     }
 
-    @Test
-    void deleteTask() {
-    }
+
 
     @Test
     void viewTaskByStatus() {
@@ -120,11 +115,19 @@ class TaskServiceImplTest {
     void updateTaskStatus() {
         TaskRequestDto request = new TaskRequestDto();
         request.setStatus("In_progress");
-        taskService.updateTaskStatus(request, 1L);
+        taskService.updateTaskStatus(request, 2L);
 
-        Task task = taskRepository.findById(1L).get();
+        Task task = taskRepository.findById(2L).get();
 
         assertEquals(Status.IN_PROGRESS, task.getStatus());
+    }
+
+    @Test
+    void deleteTask() {
+        taskService.deleteTask(14L);
+        Task task = taskRepository.findById(14L).orElse(null);
+
+        assertEquals(true, task == null);
 
     }
 }
