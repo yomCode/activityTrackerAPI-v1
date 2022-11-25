@@ -138,7 +138,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
 
-    //    ===========================VIEW TASK BY STATUS=============================================
+    //===========================VIEW TASK BY STATUS=============================================
 
     public ResponseEntity<List<TaskResponseDto>> viewTaskByStatus(String status, HttpSession session){
         User user = (User) session.getAttribute("currUser");
@@ -159,7 +159,6 @@ public class TaskServiceImpl implements TaskService {
 
 
     //    ===========================UPDATE TASK STATUS=============================================
-
     @Override
     public ResponseEntity<ApiResponse> updateTaskStatus(TaskRequestDto request, Long task_id) {
 

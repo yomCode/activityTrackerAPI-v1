@@ -49,7 +49,7 @@ public class TaskController {
     }
 
 
-    //==========================DELETE TASK=======================================================
+    //==========================DELETE TASK============================================================
 
     @DeleteMapping("/delete/{task_id}")
     public ResponseEntity<ApiResponse> deleteTask(@PathVariable Long task_id){
@@ -65,6 +65,7 @@ public class TaskController {
 
         return taskService.viewTaskByStatus(status, session);
     }
+
     //==========================EDIT TASK TITLE=======================================================
     @PatchMapping("/edit-title/{task_id}")
     public ResponseEntity<ApiResponse> edit_taskTitle(@RequestBody TaskRequestDto request, @PathVariable Long task_id){
