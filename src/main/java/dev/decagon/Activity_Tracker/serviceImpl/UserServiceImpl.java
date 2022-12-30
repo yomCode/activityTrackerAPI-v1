@@ -3,6 +3,7 @@ package dev.decagon.Activity_Tracker.serviceImpl;
 
 import dev.decagon.Activity_Tracker.entities.User;
 import dev.decagon.Activity_Tracker.enums.Gender;
+import dev.decagon.Activity_Tracker.exceptions.UserNotFoundException;
 import dev.decagon.Activity_Tracker.pojos.ApiResponse;
 import dev.decagon.Activity_Tracker.pojos.LoginRequest;
 import dev.decagon.Activity_Tracker.pojos.RegistrationRequest;
@@ -25,64 +26,43 @@ public class UserServiceImpl implements UserService {
     private final ResponseManager responseManager;
 
     @Override
-    public ResponseEntity<ApiResponse> createUser(RegistrationRequest request) {
-
-        if(request.getUsername() == null)
-            return new ResponseEntity<>(responseManager.failure("Username is required"), HttpStatus.BAD_REQUEST);
-        if (request.getUsername().length() < 4)
-            return new ResponseEntity<>(responseManager
-                    .failure("Enter a valid username, username must be atleast 4 letters long"), HttpStatus.BAD_REQUEST);
-
-        if(request.getEmail() == null)
-            return new ResponseEntity<>(responseManager.failure("Email is required!"), HttpStatus.BAD_REQUEST);
-        if(!request.getEmail().contains("@"))
-            return new ResponseEntity<>(responseManager.failure("Enter a valid email address"), HttpStatus.BAD_REQUEST);
-
-        if(request.getGender() == null)
-            return new ResponseEntity<>(responseManager.failure("Kindly specify your gender"), HttpStatus.BAD_REQUEST);
-
-
-        if(request.getPassword() == null)
-            return new ResponseEntity<>(responseManager.failure("password is required"), HttpStatus.BAD_REQUEST);
+    public ApiResponse<Object> createUser(RegistrationRequest request) {
 
         Boolean existsByEmail = userRepository.existsByEmail(request.getEmail().toLowerCase());
         Boolean existsByUsername = userRepository.existsByUsername(request.getUsername().toLowerCase());
 
         if(existsByUsername)
-            return new ResponseEntity<>(responseManager.failure("Username already in use"), HttpStatus.IM_USED);
+            return responseManager.failure("Username taken!");
 
         if(existsByEmail)
-            return new ResponseEntity<>(responseManager.failure("A User with this email already exist!"), HttpStatus.IM_USED);
+            return responseManager.failure("A User with this email already exist!");
 
-        User user = new User();
-        user.setUsername(request.getUsername().toLowerCase());
-        user.setEmail(request.getEmail().toLowerCase());
-        user.setGender(Gender.valueOf(request.getGender().toUpperCase()));
-        user.setPassword(request.getPassword());
-
+        User user = User.builder()
+                .username(request.getUsername().toLowerCase())
+                .email(request.getEmail().toLowerCase())
+                .gender(Gender.valueOf(request.getGender().toUpperCase()))
+                .password(request.getPassword())
+                .build();
         userRepository.save(user);
-        return new ResponseEntity<>(responseManager.success(user), HttpStatus.CREATED);
+        return responseManager.success("Registration successful");
 
     }
 
 
     @Override
-    public ResponseEntity<ApiResponse> userLogin(LoginRequest request, HttpSession session) {
+    public ApiResponse<Object> userLogin(LoginRequest request, HttpSession session) {
 
-        User user = userRepository.findUserByUsernameAndPassword(request.getUsername(), request.getPassword());
+        User user = userRepository.findUserByUsernameAndPassword(request.getUsername().toLowerCase(),
+                        request.getPassword()).orElseThrow(()-> new UserNotFoundException("Wrong email or password"));
 
-        if(user != null){
-            session.setAttribute("currUser", user);
-            return new ResponseEntity<>(responseManager.loginSuccess(user), HttpStatus.ACCEPTED);
-        }
-
-        return new ResponseEntity<>(responseManager.failure("wrong username or password"), HttpStatus.BAD_REQUEST);
+        session.setAttribute("currUser", user);
+        return responseManager.loginSuccess("Login successful");
 
     }
 
     @Override
-    public ResponseEntity<String> userLogout(HttpSession session){
+    public ApiResponse<Object> userLogout(HttpSession session){
         session.invalidate();
-        return new  ResponseEntity("User signed out successfully", HttpStatus.ACCEPTED);
+        return responseManager.success("You have been logged out, hope to see you again soon");
     }
 }

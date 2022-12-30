@@ -3,13 +3,18 @@ package dev.decagon.Activity_Tracker.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import dev.decagon.Activity_Tracker.enums.Status;
-import lombok.Data;
+import lombok.*;
+
 import javax.persistence.*;
 import java.util.Date;
 
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
+@Builder
 @Table(name = "tasks")
 public class Task {
     @Id

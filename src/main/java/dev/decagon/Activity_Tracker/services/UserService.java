@@ -9,10 +9,10 @@ import javax.servlet.http.HttpSession;
 
 public interface UserService {
 
-    ResponseEntity<ApiResponse> createUser(RegistrationRequest request);
+    ApiResponse<Object> createUser(RegistrationRequest request);
 
-    ResponseEntity<ApiResponse> userLogin(LoginRequest request, HttpSession session);
+    ApiResponse<Object> userLogin(LoginRequest request, HttpSession session);
 
-    ResponseEntity<String>userLogout(HttpSession session);
+    ApiResponse<Object> userLogout(HttpSession session);
 
 }

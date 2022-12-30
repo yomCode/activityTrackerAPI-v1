@@ -1,9 +1,13 @@
 package dev.decagon.Activity_Tracker.pojos;
 
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class TaskRequestDto {
 
     private String title;

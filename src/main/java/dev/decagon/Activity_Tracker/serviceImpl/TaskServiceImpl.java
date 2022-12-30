@@ -3,7 +3,7 @@ package dev.decagon.Activity_Tracker.serviceImpl;
 import dev.decagon.Activity_Tracker.entities.Task;
 import dev.decagon.Activity_Tracker.entities.User;
 import dev.decagon.Activity_Tracker.enums.Status;
-import dev.decagon.Activity_Tracker.exceptions.NullUserException;
+import dev.decagon.Activity_Tracker.exceptions.UserNotFoundException;
 import dev.decagon.Activity_Tracker.exceptions.ResourceNotFoundException;
 import dev.decagon.Activity_Tracker.pojos.ApiResponse;
 import dev.decagon.Activity_Tracker.pojos.TaskRequestDto;
@@ -12,8 +12,6 @@ import dev.decagon.Activity_Tracker.repositories.TaskRepository;
 import dev.decagon.Activity_Tracker.services.TaskService;
 import dev.decagon.Activity_Tracker.utils.ResponseManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
@@ -31,28 +29,27 @@ public class TaskServiceImpl implements TaskService {
 
 //    ===========================CREATE TASK=============================================
     @Override
-    public ResponseEntity<ApiResponse> createTask(TaskRequestDto request, HttpSession session) {
+    public String createTask(TaskRequestDto request, HttpSession session) {
 
         User user = (User) session.getAttribute("currUser");
 
         if(user != null) {
-            Task task = new Task();
-
-            task.setUser(user);
-            task.setTitle(request.getTitle());
-            task.setDescription(request.getDescription());
-            task.setStatus(Status.valueOf("PENDING"));
+            Task task = Task.builder()
+                    .user(user)
+                    .title(request.getTitle())
+                    .description(request.getDescription())
+                    .status(Status.valueOf("PENDING")).build();
 
             taskRepository.save(task);
-            return new ResponseEntity<>(responseManager.success(task), HttpStatus.CREATED);
+            return "Task created successfully";
         }
-        throw new NullUserException("Login to create a tasks", "No user in session");
+        throw new UserNotFoundException("Login to create a tasks", "No user in session");
     }
 
 
     //    ===========================VIEW ALL TASK=============================================
     @Override
-    public ResponseEntity<List<TaskResponseDto>> viewAllTask(HttpSession session) {
+    public Object viewAllTask(HttpSession session) {
 
         User user = (User) session.getAttribute("currUser");
 
@@ -60,36 +57,37 @@ public class TaskServiceImpl implements TaskService {
             List<Task> tasks = user.getTasks();
             List<TaskResponseDto> taskList = new ArrayList<>();
             tasks.forEach(task -> {
-                TaskResponseDto response = new TaskResponseDto();
-                response.setTitle(task.getTitle());
-                response.setDescription(task.getDescription());
-                response.setStatus(task.getStatus());
+
+                TaskResponseDto response = TaskResponseDto.builder()
+                        .title(task.getTitle())
+                        .description(task.getDescription())
+                        .status(task.getStatus())
+                        .build();
                 taskList.add(response);
             });
-            return new ResponseEntity<>(taskList, HttpStatus.FOUND);
+            return taskList;
         }
-        throw new NullUserException("Login to view your tasks", "No user in session");
+        throw new UserNotFoundException("Login to view your tasks", "No user in session");
     }
 
     //    ===========================VIEW TASK BY ID=============================================
     @Override
-    public ResponseEntity<TaskResponseDto> viewTaskById(Long task_id) {
+    public Object viewTaskById(Long task_id) {
 
         Task task =  taskRepository.findById(task_id)
                 .orElseThrow(()-> new ResourceNotFoundException(
                         "Task not found", "Provide a valid taskId"));
 
-        TaskResponseDto response = new TaskResponseDto();
-        response.setTitle(task.getTitle());
-        response.setDescription(task.getDescription());
-        response.setStatus(task.getStatus());
-
-        return new ResponseEntity<>(response, HttpStatus.FOUND);
+        return TaskResponseDto.builder()
+                .title(task.getTitle())
+                .description(task.getDescription())
+                .status(task.getStatus())
+                .build();
     }
 
 //    ===========================EDIT TASK TITLE=============================================
 
-    public ResponseEntity<ApiResponse> edit_taskTitle(TaskRequestDto request, Long task_id){
+    public ApiResponse<Object> edit_taskTitle(TaskRequestDto request, Long task_id){
 
         Task task = taskRepository.findById(task_id)
                 .orElseThrow(()-> new ResourceNotFoundException(
@@ -97,18 +95,20 @@ public class TaskServiceImpl implements TaskService {
 
         task.setTitle(request.getTitle());
         taskRepository.save(task);
-        TaskResponseDto response = new TaskResponseDto();
-        response.setTitle(task.getTitle());
-        response.setDescription(task.getDescription());
-        response.setStatus(task.getStatus());
 
-        return new ResponseEntity<>(responseManager.success(task), HttpStatus.ACCEPTED) ;
+        TaskResponseDto response = TaskResponseDto.builder()
+                .title(task.getTitle())
+                .description(task.getDescription())
+                .status(task.getStatus())
+                .build();
+
+        return responseManager.success(response);
     }
 
 
     //    ===========================EDIT TASK DESCRIPTION=============================================
 
-    public ResponseEntity<ApiResponse> edit_taskDescription(TaskRequestDto request, Long task_id){
+    public ApiResponse<Object> edit_taskDescription(TaskRequestDto request, Long task_id){
 
         Task task = taskRepository.findById(task_id)
                 .orElseThrow(()-> new ResourceNotFoundException(
@@ -116,57 +116,58 @@ public class TaskServiceImpl implements TaskService {
 
         task.setDescription(request.getDescription());
         taskRepository.save(task);
-        TaskResponseDto response = new TaskResponseDto();
-        response.setTitle(task.getTitle());
-        response.setDescription(task.getDescription());
-        response.setStatus(task.getStatus());
+        TaskResponseDto response = TaskResponseDto.builder()
+                .title(task.getTitle())
+                .description(task.getDescription())
+                .status(task.getStatus())
+                .build();
 
-        return new ResponseEntity<>(responseManager.success(response), HttpStatus.ACCEPTED) ;
+        return responseManager.success(response);
     }
 
 
     //    ===========================DELETE TASK=============================================
 
     @Override
-    public ResponseEntity<ApiResponse> deleteTask(Long task_id) {
+    public ApiResponse<Object> deleteTask(Long task_id) {
         Task task = taskRepository.findById(task_id)
                         .orElseThrow(()-> new ResourceNotFoundException(
                                 "Task not found", "Provide a valid task Id"));
 
         taskRepository.delete(task);
-        return new ResponseEntity<>(responseManager.success("Task deleted successfully!"), HttpStatus.ACCEPTED);
+
+        return responseManager.success("Task deleted successfully!");
     }
 
 
     //===========================VIEW TASK BY STATUS=============================================
 
-    public ResponseEntity<List<TaskResponseDto>> viewTaskByStatus(String status, HttpSession session){
+    public ApiResponse<Object> viewTaskByStatus(String status, HttpSession session){
         User user = (User) session.getAttribute("currUser");
         List<Task> tasks = user.getTasks();
 
         List<TaskResponseDto> responses = new ArrayList<>();
         tasks.forEach(task ->{
             if(task.getStatus().equals(Status.valueOf(status.toUpperCase()))){
-                TaskResponseDto response = new TaskResponseDto();
-                response.setTitle(task.getTitle());
-                response.setDescription(task.getDescription());
-                response.setStatus(task.getStatus());
+                TaskResponseDto response = TaskResponseDto.builder()
+                        .title(task.getTitle())
+                        .description(task.getDescription())
+                        .status(task.getStatus())
+                        .build();
                 responses.add(response);
             }
         });
-        return new ResponseEntity<>(responses, HttpStatus.FOUND) ;
+        return responseManager.success(responses);
     }
 
 
     //    ===========================UPDATE TASK STATUS=============================================
     @Override
-    public ResponseEntity<ApiResponse> updateTaskStatus(TaskRequestDto request, Long task_id) {
+    public ApiResponse<Object> updateTaskStatus(TaskRequestDto request, Long task_id) {
 
         Task task = taskRepository.findById(task_id)
                 .orElseThrow(()-> new ResourceNotFoundException(
                         "Task not found", "Provide a valid taskId"));
-
-        TaskResponseDto response = new TaskResponseDto();
 
         task.setStatus(Status.valueOf(request.getStatus().toUpperCase()));
         if(request.getStatus().equalsIgnoreCase("done")){
@@ -174,10 +175,12 @@ public class TaskServiceImpl implements TaskService {
         }
         taskRepository.save(task);
 
-        response.setTitle(task.getTitle());
-        response.setDescription(task.getDescription());
-        response.setStatus(task.getStatus());
+        TaskResponseDto response = TaskResponseDto.builder()
+                .title(task.getTitle())
+                .description(task.getDescription())
+                .status(task.getStatus())
+                .build();
 
-        return new ResponseEntity<>(responseManager.success(response), HttpStatus.FOUND);
+        return responseManager.success(response);
     }
 }

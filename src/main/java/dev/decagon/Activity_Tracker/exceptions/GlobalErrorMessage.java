@@ -1,4 +1,4 @@
-package dev.decagon.Activity_Tracker.utils;
+package dev.decagon.Activity_Tracker.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

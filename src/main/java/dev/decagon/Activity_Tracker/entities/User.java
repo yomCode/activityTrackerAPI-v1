@@ -2,18 +2,19 @@ package dev.decagon.Activity_Tracker.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import dev.decagon.Activity_Tracker.enums.Gender;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
 
-@Data
 @Entity
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Table(name = "users")
 public class User {
     @Id
