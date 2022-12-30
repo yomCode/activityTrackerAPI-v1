@@ -26,16 +26,16 @@ public class UserServiceImpl implements UserService {
     private final ResponseManager responseManager;
 
     @Override
-    public ApiResponse<Object> createUser(RegistrationRequest request) {
+    public String createUser(RegistrationRequest request) {
 
         Boolean existsByEmail = userRepository.existsByEmail(request.getEmail().toLowerCase());
         Boolean existsByUsername = userRepository.existsByUsername(request.getUsername().toLowerCase());
 
         if(existsByUsername)
-            return responseManager.failure("Username taken!");
+            return "Username taken!";
 
         if(existsByEmail)
-            return responseManager.failure("A User with this email already exist!");
+            return "A User with this email already exist!";
 
         User user = User.builder()
                 .username(request.getUsername().toLowerCase())
@@ -44,25 +44,23 @@ public class UserServiceImpl implements UserService {
                 .password(request.getPassword())
                 .build();
         userRepository.save(user);
-        return responseManager.success("Registration successful");
-
+        return "Registration successful";
     }
 
 
     @Override
-    public ApiResponse<Object> userLogin(LoginRequest request, HttpSession session) {
+    public String userLogin(LoginRequest request, HttpSession session) {
 
         User user = userRepository.findUserByUsernameAndPassword(request.getUsername().toLowerCase(),
                         request.getPassword()).orElseThrow(()-> new UserNotFoundException("Wrong email or password"));
 
         session.setAttribute("currUser", user);
-        return responseManager.loginSuccess("Login successful");
-
+        return "Login successful";
     }
 
     @Override
-    public ApiResponse<Object> userLogout(HttpSession session){
+    public String userLogout(HttpSession session){
         session.invalidate();
-        return responseManager.success("You have been logged out, hope to see you again soon");
+        return "You have been logged out, hope to see you again soon";
     }
 }

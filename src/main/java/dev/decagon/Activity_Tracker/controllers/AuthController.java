@@ -18,16 +18,17 @@ import javax.servlet.http.HttpSession;
 public class AuthController {
 
     private final UserService userService;
+    private final HttpSession session;
 
     @PostMapping("/login")
-    public ApiResponse<Object> userLogin(@RequestBody LoginRequest request, HttpSession session){
-
-        Object response = userService.userLogin(request, session);
+    public ApiResponse<Object> userLogin(@RequestBody LoginRequest request){
+        String response = userService.userLogin(request, session);
         return new ResponseManager().success(response, HttpStatus.OK);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> userLogout(HttpSession session){
-       return userService.userLogout(session);
+    public ApiResponse<Object> userLogout(){
+       String response = userService.userLogout(session);
+       return new ResponseManager().success(response, HttpStatus.OK);
     }
 }

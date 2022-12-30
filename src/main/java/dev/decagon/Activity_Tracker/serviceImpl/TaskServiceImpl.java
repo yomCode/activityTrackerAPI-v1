@@ -87,7 +87,7 @@ public class TaskServiceImpl implements TaskService {
 
 //    ===========================EDIT TASK TITLE=============================================
 
-    public ApiResponse<Object> edit_taskTitle(TaskRequestDto request, Long task_id){
+    public String edit_taskTitle(TaskRequestDto request, Long task_id){
 
         Task task = taskRepository.findById(task_id)
                 .orElseThrow(()-> new ResourceNotFoundException(
@@ -96,19 +96,13 @@ public class TaskServiceImpl implements TaskService {
         task.setTitle(request.getTitle());
         taskRepository.save(task);
 
-        TaskResponseDto response = TaskResponseDto.builder()
-                .title(task.getTitle())
-                .description(task.getDescription())
-                .status(task.getStatus())
-                .build();
-
-        return responseManager.success(response);
+        return "Task updated sucessfully";
     }
 
 
     //    ===========================EDIT TASK DESCRIPTION=============================================
 
-    public ApiResponse<Object> edit_taskDescription(TaskRequestDto request, Long task_id){
+    public String edit_taskDescription(TaskRequestDto request, Long task_id){
 
         Task task = taskRepository.findById(task_id)
                 .orElseThrow(()-> new ResourceNotFoundException(
@@ -116,33 +110,27 @@ public class TaskServiceImpl implements TaskService {
 
         task.setDescription(request.getDescription());
         taskRepository.save(task);
-        TaskResponseDto response = TaskResponseDto.builder()
-                .title(task.getTitle())
-                .description(task.getDescription())
-                .status(task.getStatus())
-                .build();
 
-        return responseManager.success(response);
+        return "Task updated sucessfully";
     }
 
 
     //    ===========================DELETE TASK=============================================
 
     @Override
-    public ApiResponse<Object> deleteTask(Long task_id) {
+    public String deleteTask(Long task_id) {
         Task task = taskRepository.findById(task_id)
                         .orElseThrow(()-> new ResourceNotFoundException(
                                 "Task not found", "Provide a valid task Id"));
-
         taskRepository.delete(task);
 
-        return responseManager.success("Task deleted successfully!");
+        return "Task deleted successfully!";
     }
 
 
     //===========================VIEW TASK BY STATUS=============================================
 
-    public ApiResponse<Object> viewTaskByStatus(String status, HttpSession session){
+    public List<TaskResponseDto> viewTaskByStatus(String status, HttpSession session){
         User user = (User) session.getAttribute("currUser");
         List<Task> tasks = user.getTasks();
 
@@ -157,13 +145,13 @@ public class TaskServiceImpl implements TaskService {
                 responses.add(response);
             }
         });
-        return responseManager.success(responses);
+        return responses;
     }
 
 
     //    ===========================UPDATE TASK STATUS=============================================
     @Override
-    public ApiResponse<Object> updateTaskStatus(TaskRequestDto request, Long task_id) {
+    public String updateTaskStatus(TaskRequestDto request, Long task_id) {
 
         Task task = taskRepository.findById(task_id)
                 .orElseThrow(()-> new ResourceNotFoundException(
@@ -175,12 +163,6 @@ public class TaskServiceImpl implements TaskService {
         }
         taskRepository.save(task);
 
-        TaskResponseDto response = TaskResponseDto.builder()
-                .title(task.getTitle())
-                .description(task.getDescription())
-                .status(task.getStatus())
-                .build();
-
-        return responseManager.success(response);
+        return "Task status updated successfully";
     }
 }

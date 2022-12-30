@@ -4,7 +4,9 @@ package dev.decagon.Activity_Tracker.controllers;
 import dev.decagon.Activity_Tracker.pojos.ApiResponse;
 import dev.decagon.Activity_Tracker.pojos.RegistrationRequest;
 import dev.decagon.Activity_Tracker.services.UserService;
+import dev.decagon.Activity_Tracker.utils.ResponseManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,12 +21,9 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse> register_user(@RequestBody RegistrationRequest request){
-
-        return userService.createUser(request);
-
+    public ApiResponse<Object> register_user(@RequestBody RegistrationRequest request){
+        String response = userService.createUser(request);
+        return new ResponseManager().success(response, HttpStatus.CREATED);
     }
-
-
 
 }

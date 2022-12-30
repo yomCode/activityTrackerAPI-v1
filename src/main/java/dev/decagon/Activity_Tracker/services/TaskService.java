@@ -17,14 +17,14 @@ public interface TaskService {
 
     Object viewTaskById(Long task_id);
 
-    ApiResponse<Object> deleteTask(Long task_id);
+    String deleteTask(Long task_id);
 
-    ApiResponse<Object> edit_taskTitle(TaskRequestDto request, Long task_id);
+    String edit_taskTitle(TaskRequestDto request, Long task_id);
 
-    ApiResponse<Object> edit_taskDescription(TaskRequestDto request, Long task_id);
+    String edit_taskDescription(TaskRequestDto request, Long task_id);
 
-    ApiResponse<Object> viewTaskByStatus(String status, HttpSession session);
+    List<TaskResponseDto> viewTaskByStatus(String status, HttpSession session);
 
-    ApiResponse<Object> updateTaskStatus (TaskRequestDto request, Long task_id);
+    String updateTaskStatus (TaskRequestDto request, Long task_id);
 
 }
