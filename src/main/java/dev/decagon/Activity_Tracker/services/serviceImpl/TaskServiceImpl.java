@@ -1,11 +1,10 @@
-package dev.decagon.Activity_Tracker.serviceImpl;
+package dev.decagon.Activity_Tracker.services.serviceImpl;
 
 import dev.decagon.Activity_Tracker.entities.Task;
 import dev.decagon.Activity_Tracker.entities.User;
 import dev.decagon.Activity_Tracker.enums.Status;
 import dev.decagon.Activity_Tracker.exceptions.UserNotFoundException;
 import dev.decagon.Activity_Tracker.exceptions.ResourceNotFoundException;
-import dev.decagon.Activity_Tracker.pojos.ApiResponse;
 import dev.decagon.Activity_Tracker.pojos.TaskRequestDto;
 import dev.decagon.Activity_Tracker.pojos.TaskResponseDto;
 import dev.decagon.Activity_Tracker.repositories.TaskRepository;

@@ -7,10 +7,10 @@ import dev.decagon.Activity_Tracker.services.UserService;
 import dev.decagon.Activity_Tracker.utils.ResponseManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -21,7 +21,7 @@ public class AuthController {
     private final HttpSession session;
 
     @PostMapping("/login")
-    public ApiResponse<Object> userLogin(@RequestBody LoginRequest request){
+    public ApiResponse<Object> userLogin(@Valid @RequestBody LoginRequest request){
         String response = userService.userLogin(request, session);
         return new ResponseManager().success(response, HttpStatus.OK);
     }

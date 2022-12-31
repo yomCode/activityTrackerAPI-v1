@@ -1,20 +1,15 @@
-package dev.decagon.Activity_Tracker.serviceImpl;
+package dev.decagon.Activity_Tracker.services.serviceImpl;
 
 
 import dev.decagon.Activity_Tracker.entities.User;
 import dev.decagon.Activity_Tracker.enums.Gender;
 import dev.decagon.Activity_Tracker.exceptions.UserNotFoundException;
-import dev.decagon.Activity_Tracker.pojos.ApiResponse;
 import dev.decagon.Activity_Tracker.pojos.LoginRequest;
 import dev.decagon.Activity_Tracker.pojos.RegistrationRequest;
 import dev.decagon.Activity_Tracker.repositories.UserRepository;
 import dev.decagon.Activity_Tracker.services.UserService;
-import dev.decagon.Activity_Tracker.utils.ResponseManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import javax.servlet.http.HttpSession;
 
 
@@ -23,7 +18,6 @@ import javax.servlet.http.HttpSession;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final ResponseManager responseManager;
 
     @Override
     public String createUser(RegistrationRequest request) {
